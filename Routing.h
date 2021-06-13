@@ -28,7 +28,6 @@ public:
 	}
 
 int chkWrplnk(Q2DTorusNode* cur, Q2DTorusNode* dst);//check how many wrap links need from cur to dst.
-bool			checkBuffer(Buffer *buff1 , int &chn, Buffer*& record);
 
 
 NodeInfo*	forward(Message&);
@@ -38,7 +37,7 @@ NodeInfo*	oneWrapLinkrt(Q2DTorusNode* cur, Q2DTorusNode* dst);//from cur to  nee
 NodeInfo*	twoWrapLinkrt(Q2DTorusNode* cur, Q2DTorusNode* dst);//from cur to  need  two wraplink.
 
 
-int		prefer(Buffer *buff1,Buffer *buff2,  int& chn1 , int& chn2, Buffer*& buff);    
+int		prefer(Buffer *buff1,Buffer *buff2, int xdis, int ydis, int& channel, Buffer*& buff);
 
 };														   
 

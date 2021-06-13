@@ -66,97 +66,60 @@ NodeInfo*	Routing::forward(Q2DTorusNode* cur, Q2DTorusNode* dst){
 		 
 		 ***********/
 
-bool Routing::checkBuffer(Buffer *buff1 , int &chn ,Buffer*& record){  
-	bool k = false;	
-	if(	buff1->linkused == true) {
-		return k;
-	}
 
- 	if( chn == R1){
-		if(buff1->r1 >= MESSLENGTH ){		
-			k = true;
+
+
+
+
+int		Routing::prefer(Buffer* buff1, Buffer* buff2, int xdis, int ydis, int& chn, Buffer*& record) {
+	int bufferslc = 0;
+	int var;
+	bool k = false;
+	bool xflag =( xdis == 0 || buff1->linkused);
+	bool yflag =( ydis == 0 || buff2 == NULL || buff2->linkused);
+	if (xflag == true && yflag == true) {
+		bufferslc = 0;
+	}
+	else if (xflag == true && yflag == false) {
+		if (buff2->r1 >= MESSLENGTH || buff2->r2 >= MESSLENGTH) {
+			if (buff2->r1 >= MESSLENGTH) chn = R1; else chn = R2;
+			if (chn == R1 || xdis == 0) {
+				record = buff2;
+				buff2->bufferMin(chn, MESSLENGTH);
+				bufferslc = 2;
+				buff2->linkused = true;
+			}
+		}
+	}
+	else if (xflag == false && yflag == true) {
+		if (buff1->r1 >= MESSLENGTH || buff1->r2 >= MESSLENGTH) {
+			if (buff1->r1 >= MESSLENGTH) chn = R1; else chn = R2;
+			record = buff1;
+			buff1->bufferMin(chn, MESSLENGTH);
+			bufferslc = 1;
 			buff1->linkused = true;
 		}
-		
 	}
-	/*else{
-		if(  buff1->r1 >= MESSLENGTH){
-			chn = R1;
-			k = true;
-			buff1->linkused = true;
+	else if (xflag == false && yflag == false) {
+		if (buff1->r1 >= MESSLENGTH || buff2->r1 >= MESSLENGTH || buff1->r2 >= MESSLENGTH || buff2->r2 >= MESSLENGTH) {
+			if (buff1->r1 >= MESSLENGTH || buff2->r1 >= MESSLENGTH) chn = R1; else chn = R2;
+			if (buff1->r1 >= MESSLENGTH || (buff1->r2 >= MESSLENGTH && chn == R2)) {
+				record = buff1;
+				buff1->bufferMin(chn, MESSLENGTH);
+				bufferslc = 1;
+				buff1->linkused = true;
+			}
+			else {
+				if (chn == R1 || xdis == 0) {
+					record = buff2;
+					buff2->bufferMin(chn, MESSLENGTH);
+					bufferslc = 2;
+					buff2->linkused = true;
+				}
+			}
 		}
-		else if(buff1->r2 >= MESSLENGTH){ 
-			chn = R2;
-			k = true;
-			buff1->linkused = true;
-		}	
-	}*/
-	if ( k ) {
-		record = buff1;
-		buff1->bufferMin(chn, MESSLENGTH);	
 	}
-	return k;
-}
-
-
-
-
-
-int		Routing::prefer(Buffer *buff1,Buffer *buff2,  int& chn1 , int& chn2, Buffer*& record){
-//检查是否有足够的缓存，链路是否可用
-			if( buff1 != NULL && buff2 == NULL)
-					if(checkBuffer(buff1, chn1, record))
-						 return 1;
-					else return 0;
-
-			if (buff1 != NULL && buff2 != NULL)
-					if (checkBuffer(buff1, chn1, record))
-						return 1;
-					else return 0;
-			
-			if( buff1 == NULL && buff2 != NULL)
-					if(checkBuffer(buff2, chn2, record))
-						 return 2;
-					else return 0;
-
-			if (buff1 == NULL && buff2 == NULL)
-						return 0;
-
-			/*int bufferslc = 0;
-			int var;
-
-			if( chn1 == R1 && chn2 == R1) var = 1;
-			if( chn1 == R1 && chn2 == R2) var = 2;
-
-			if( chn1 == R2 && chn2 == R1) var = 3;
-			if( chn1 == R2 && chn2 == R2) var = 4;
-
-			switch (var){
-			case 1: case 3: case 4:
-				if(checkBuffer(buff1, chn1,record )){
-								bufferslc = 1;
-								return bufferslc;
-				}
-
-				if(checkBuffer(buff2, chn2,record )){
-								bufferslc = 2;
-								return bufferslc;
-				}
-				return bufferslc;
-
-			case 2: 
-
-				if(checkBuffer(buff2, chn2,record )){
-								bufferslc = 2;
-								return bufferslc;
-				}
-
-				if(checkBuffer(buff1, chn1,record )){
-								bufferslc = 1;
-								return bufferslc;
-				}
-					return bufferslc;
-			}*/
+	return bufferslc;
 }
 
 
@@ -173,41 +136,7 @@ NodeInfo*	Routing::noWrapLinkrt(Q2DTorusNode* cur, Q2DTorusNode* dst){  //routin
 	int xdis = dstx - curx;//x方向的偏移
 	int ydis = dsty - cury;//y方向的偏移
 
-
-	
-	
     int bufferslc ; // 0 no buffer available, 1: select  x direction buffer,2 y direction, 3 z direction
-	int var1;
-	int var2;
-
-	
-
-	int vchx;   // virtual channel of x axis
-	int vchy;
-
-
-	if( xdis < 0) var1 = 0;
-	else { 
-		if( xdis == 0) var1 = 1;
-		else if( xdis > 0) var1 = 2;
-	}
-	
-	if (true)
-	{
-		if (ydis < 0) var2 = 0;
-		else {
-			if (ydis == 0) var2 = 1;
-			else if (ydis > 0) var2 = 2;
-		}
-	}
-	else
-	{
-		var2 = 1;//xy路由算法：x方向的偏移不为0时,不能走y方向
-	}
-	
-
-     
-	
 
 	Buffer* xlink[3] = {cur->bufferxneglink, NULL, cur->bufferxposlink};
 	Buffer* ylink[3] = {cur->bufferyneglink, NULL, cur->bufferyposlink};
@@ -235,21 +164,17 @@ NodeInfo*	Routing::noWrapLinkrt(Q2DTorusNode* cur, Q2DTorusNode* dst){  //routin
 		else{
 			vchy = R2;
 		}*/
-		vchx = R1;//无虚拟通道都使用r1
-		vchy = R1;
 
-		bufferslc =	prefer(xlink[var1], ylink[var2], vchx, vchy, next->buff);
+		bufferslc =	prefer(xlink[var1], ylink[var2], xdis, ydis, next->channel, next->buff);
 				switch(bufferslc){
 					case 0:
 					next->node = -1;
 						break;
 					case 1:
 						next->node = xlinknode[var1];
-						next->channel = vchx;
 						break;
 					case 2:
 						next->node = ylinknode[var2];
-						next->channel = vchy;
 						break;
 				
 					}
@@ -334,8 +259,8 @@ NodeInfo* Routing::oneWrapLinkrt(Q2DTorusNode* cur, Q2DTorusNode* dst){  //routi
 	
 	
 
-
-		bufferslc =	prefer(xlink[var1], ylink[var2], vchx, vchy,  next->buff);
+	bufferslc = prefer(xlink[var1], ylink[var2], xdis, ydis, next->channel, next->buff);
+		//bufferslc =	prefer(xlink[var1], ylink[var2], vchx, vchy,  next->buff);
 				switch(bufferslc){
 					case 0:
 					next->node = -1;
@@ -405,8 +330,8 @@ NodeInfo*	Routing::twoWrapLinkrt(Q2DTorusNode* cur, Q2DTorusNode* dst){
 
 
 
-
-		bufferslc =	prefer(xlink[var1], ylink[var2], vchx, vchy, next->buff);
+	bufferslc = prefer(xlink[var1], ylink[var2], xdis, ydis, next->channel, next->buff);
+		//bufferslc =	prefer(xlink[var1], ylink[var2], vchx, vchy, next->buff);
 				switch(bufferslc){
 					case 0:
 					next->node = -1;
