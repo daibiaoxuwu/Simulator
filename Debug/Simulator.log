@@ -1,0 +1,10 @@
+﻿  main.cpp
+D:\downloads\大作业0\大作业\Simulator\Simulator\Simulator\main.cpp(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+D:\downloads\大作业0\大作业\Simulator\Simulator\Simulator\main.cpp(67,3): warning C4305: “=”: 从“double”到“float”截断
+D:\downloads\大作业0\大作业\Simulator\Simulator\Simulator\main.cpp(221,41): warning C4305: “+=”: 从“double”到“float”截断
+D:\downloads\大作业0\大作业\Simulator\Simulator\Simulator\main.cpp(222,28): warning C4305: “+=”: 从“double”到“float”截断
+D:\downloads\大作业0\大作业\Simulator\Simulator\Simulator\main.cpp(226,40): warning C4305: “+=”: 从“double”到“float”截断
+D:\downloads\大作业0\大作业\Simulator\Simulator\Simulator\main.cpp(227,27): warning C4305: “+=”: 从“double”到“float”截断
+D:\downloads\大作业0\大作业\Simulator\Simulator\Simulator\main.cpp(230,40): warning C4305: “+=”: 从“double”到“float”截断
+D:\downloads\大作业0\大作业\Simulator\Simulator\Simulator\main.cpp(231,27): warning C4305: “+=”: 从“double”到“float”截断
+  Simulator.vcxproj -> D:\downloads\大作业0\大作业\Simulator\Simulator\Debug\Simulator.exe
